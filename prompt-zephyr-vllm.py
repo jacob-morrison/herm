@@ -40,8 +40,14 @@ with open('all_prompts_train_with_gpt-4-1106-preview_responses_explicit_refusal.
         )
         outputs = llm.generate(full_prompts, sampling_params)
 
+        unk_count = 0
         for data, output in zip(datas, outputs):
             new_response = output.outputs[0].text
+            if "id" not in data:
+                id = f"extra_id_{unk_count}"
+                unk_count += 1
+            else:
+                id = data["id"]
             out_data = {
                 "prompt": data["prompt"], # the instruction given in the various test sets.
                 "chosen": data["response"], # the response from the better model or the better rated prompt.
@@ -49,7 +55,7 @@ with open('all_prompts_train_with_gpt-4-1106-preview_responses_explicit_refusal.
                 "rejected": new_response, # the response with the lower score or from word model.
                 "rejected_model": "HuggingFaceH4/zephyr-7b-beta", # where applicable
                 "subset": data["category"], # Will be from the various evaluation scores assigned to the model.
-                "id": data["id"], # an incremented id for every prompt in the benchmark.
+                "id": id, # an incremented id for every prompt in the benchmark.
             }
             responses.append(out_data)
             json.dump(out_data, f_out)
