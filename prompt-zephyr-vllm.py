@@ -29,6 +29,7 @@ with open('all_prompts_train_with_gpt-4-1106-preview_responses_explicit_refusal.
             full_prompt = pipe.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
             full_prompts.append(full_prompt)
             datas.append(data)
+            i += 1
             if i == 100:
                 break
 
@@ -55,6 +56,5 @@ with open('all_prompts_train_with_gpt-4-1106-preview_responses_explicit_refusal.
             responses.append(out_data)
             json.dump(out_data, f_out)
             f_out.write('\n')
-            i += 1
             if i % 10 == 0:
                 print(i)
