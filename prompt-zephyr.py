@@ -1,6 +1,7 @@
 from transformers import pipeline
 import torch
 import json
+from datasets import Dataset
 
 pipe = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-beta", torch_dtype=torch.bfloat16, device=0)
 
@@ -9,6 +10,7 @@ max_response_length = 0
 responses = []
 with open('all_prompts_train_with_gpt-4-1106-preview_responses_explicit_refusal.jsonl') as f_in:
     with open('f_out.jsonl', 'w') as f_out:
+        i = 0
         for line in f_in.readlines():
             data = json.loads(line)
             prompt = data["prompt"]
@@ -22,7 +24,7 @@ with open('all_prompts_train_with_gpt-4-1106-preview_responses_explicit_refusal.
                 {"role": "user", "content": prompt},
             ]
             prompt = pipe.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
-            outputs = pipe(prompt, max_new_tokens=2048, do_sample=True, temperature=0.7, top_k=50, top_p=0.95)
+            outputs = pipe(prompt, max_new_tokens=2048, do_sample=True, temperature=0.7, top_k=1, top_p=0.95)
             new_response = outputs[0]["generated_text"]
             out_data = {
                 "prompt": prompt, # the instruction given in the various test sets.
@@ -36,3 +38,6 @@ with open('all_prompts_train_with_gpt-4-1106-preview_responses_explicit_refusal.
             responses.append(out_data)
             json.dump(out_data, f_out)
             f_out.write('\n')
+            i += 1
+            if i % 100 == 0:
+                print(i)
