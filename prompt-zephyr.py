@@ -1,7 +1,6 @@
 from transformers import pipeline
 import torch
 import json
-from datasets import Dataset
 
 pipe = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-beta", torch_dtype=torch.bfloat16, device=0)
 
