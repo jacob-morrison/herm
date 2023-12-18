@@ -2,7 +2,7 @@ from transformers import pipeline
 import torch
 import json
 
-pipe = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-beta", torch_dtype=torch.bfloat16, device_map="auto")
+pipe = pipeline("text-generation", model="HuggingFaceH4/zephyr-7b-beta", torch_dtype=torch.bfloat16, device=0)
 
 max_response_length = 0
 
