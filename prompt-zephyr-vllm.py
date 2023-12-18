@@ -30,8 +30,6 @@ with open('all_prompts_train_with_gpt-4-1106-preview_responses_explicit_refusal.
             full_prompts.append(full_prompt)
             datas.append(data)
             i += 1
-            if i == 100:
-                break
 
         llm = LLM(model="HuggingFaceH4/zephyr-7b-beta")
         sampling_params = SamplingParams(
@@ -56,5 +54,3 @@ with open('all_prompts_train_with_gpt-4-1106-preview_responses_explicit_refusal.
             responses.append(out_data)
             json.dump(out_data, f_out)
             f_out.write('\n')
-            if i % 10 == 0:
-                print(i)
