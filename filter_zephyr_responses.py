@@ -9,11 +9,7 @@ with open('all_prompts_train_with_gpt-4-1106-preview_responses_explicit_refusal.
             for ref_dict, zephyr_dict in zip(refusals, zephyr_responses):
                 data = json.loads(ref_dict)
                 if data["is_refusal"]:
-                    zephyr_data = json.loads(zephyr_dict)
-                    zephyr_data["category"] = data["category"]
                     categories.add(data["category"])
-                    json.dump(zephyr_data, f_out)
-                    f_out.write('\n')
-                    # f_out.writelines(zephyr_dict)
+                    f_out.writelines(zephyr_dict)
 
 print(categories)
