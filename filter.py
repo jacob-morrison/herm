@@ -42,11 +42,28 @@ assert args.subset in subsets, f"Subset given {args.subset} not found in list of
 # Get subset and start index from arguments
 start_idx = args.start_idx
 
-# Load dataset
-dataset = load_dataset("ai2-rlhf-collab/rm-benchmark-dev", split="train")
+# # Load dataset
+# dataset = load_dataset("ai2-rlhf-collab/rm-benchmark-dev", split="train")
 
-# Filter dataset based on subset
-dataset = dataset.filter(lambda x: x["subset"] == args.subset)
+# # Filter dataset based on subset
+# dataset = dataset.filter(lambda x: x["subset"] == args.subset)
+
+if args.subset == 'refusals-dangerous':
+    file_path = 'f_out-dolphin-dangerous.jsonl'
+    subset = 'dangerous'
+elif args.subset == 'refusals-offensive':
+    file_path = 'f_out-dolphin-offensive.jsonl'
+    subset = 'offensive'
+else:
+    print('Only doing refusals atm')
+    quit()
+
+dataset = []
+with open(file_path) as f_in:
+    import json
+    for line in f_in.readlines():
+        data = json.loads(line)
+        dataset.append(data)
 
 # Seed for reproducibility
 random.seed(0)
@@ -55,9 +72,27 @@ random.shuffle(indices)
 print(indices)
 
 # Loop over the dataset
-for idx in indices[start_idx:]:
-    os.system('clear')
-    row = dataset[idx]
-    print(idx, "=====================")
-    print_pretty(row)
-    input("Press Enter to continue...")
+with open(f'filtered-refusals-dolphin-{subset}.jsonl', 'a') as f_out:
+    i = indices.index(start_idx)
+    while i < len(indices):
+    # for idx in indices[start_idx:]:
+        idx = indices[i]
+        row = dataset[idx]
+        print(idx, "=====================")
+        print_pretty(row)
+        inp = input("Press k to keep and f to filter...")
+        if inp == 'k':
+            row['filtered'] = False
+            i += 1
+            json.dump(row, f_out)
+            f_out.write('\n')
+            os.system('clear')
+        elif inp == 'f':
+            row['filtered'] = True
+            i += 1
+            json.dump(row, f_out)
+            f_out.write('\n')
+            os.system('clear')
+        else:
+            os.system('clear')
+            print(f'Invalid input: {inp}')
